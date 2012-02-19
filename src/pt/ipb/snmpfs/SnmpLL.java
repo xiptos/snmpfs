@@ -711,8 +711,17 @@ public class SnmpLL implements PDUFactory {
 		this.vbs.clear();
 	}
 
+	public void addVb(OID oid) {
+		this.vbs.add(new VariableBinding(oid));
+	}
+
 	public void addVb(String oid) {
 		this.vbs.add(new VariableBinding(new OID(oid)));
+	}
+
+	public void setVb(OID oid) {
+		this.vbs.clear();
+		addVb(oid);
 	}
 
 	public void setVb(String oid) {
@@ -863,7 +872,7 @@ public class SnmpLL implements PDUFactory {
 		// e.printStackTrace();
 		// }
 
-		//ll.setVb("1.3.6.1.2.1.2.2");
+		// ll.setVb("1.3.6.1.2.1.2.2");
 		ll.setVb("1.3.6.1.2.1.4.21");
 		ll.setOperation(TABLE);
 		ll.setPduType(PDU.GETBULK);
