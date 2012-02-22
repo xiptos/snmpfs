@@ -1,0 +1,26 @@
+<device address="192.168.1.1" name="device">
+
+	<mount dir="tmp" />
+
+	<mibs dir="mibs">
+		<mib file="SNMPv2-MIB"/>
+	</mibs>
+
+	<snmp version="v2c" community="public" />
+
+	<entries>
+		<scalar node="sysUpTime" />
+		<scalar node="sysDescr" />
+		<table node="ifTable" />
+		<table oid="1.3.6.1.2.1.25.2.3.">
+			<col oid="1.3.6.1.2.1.25.2.3.1.1." />
+			<col oid="1.3.6.1.2.1.25.2.3.1.2." />
+			<col oid="1.3.6.1.2.1.25.2.3.1.3." />
+			<col oid="1.3.6.1.2.1.25.2.3.1.4." />
+			<col oid="1.3.6.1.2.1.25.2.3.1.5." />
+			<col oid="1.3.6.1.2.1.25.2.3.1.6." />
+			<col oid="1.3.6.1.2.1.25.2.3.1.7." />
+		</table>
+	</entries>
+
+</device>

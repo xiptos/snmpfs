@@ -884,38 +884,6 @@ public class SnmpLL implements PDUFactory {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		/*
-		 * try { SnmpRequest snmpRequest = new SnmpRequest(args); if
-		 * (snmpRequest.operation == SNAPSHOT_DUMP) {
-		 * snmpRequest.dumpSnapshot(); } else { try { if (snmpRequest.operation
-		 * == LISTEN) { snmpRequest.listen(); } else if ((snmpRequest.operation
-		 * == TABLE) || (snmpRequest.operation == CVS_TABLE) ||
-		 * (snmpRequest.operation == TIME_BASED_CVS_TABLE)) {
-		 * snmpRequest.table(); } else { PDU response = snmpRequest.send(); if
-		 * ((snmpRequest.getPduType() == PDU.TRAP) || (snmpRequest.getPduType()
-		 * == PDU.REPORT) || (snmpRequest.getPduType() == PDU.V1TRAP) ||
-		 * (snmpRequest.getPduType() == PDU.RESPONSE)) {
-		 * System.out.println(PDU.getTypeString(snmpRequest.getPduType()) +
-		 * " sent successfully"); } else if (response == null) { if
-		 * (snmpRequest.operation != WALK) {
-		 * System.out.println("Request timed out."); } } else if
-		 * (response.getType() == PDU.REPORT) { printReport(response); } else if
-		 * (snmpRequest.operation == DEFAULT) {
-		 * System.out.println("Response received with requestID=" +
-		 * response.getRequestID() + ", errorIndex=" + response.getErrorIndex()
-		 * + ", " + "errorStatus=" + response.getErrorStatusText() + "(" +
-		 * response.getErrorStatus() + ")"); printVariableBindings(response); }
-		 * else { System.out.println("Received something strange: requestID=" +
-		 * response.getRequestID() + ", errorIndex=" + response.getErrorIndex()
-		 * + ", " + "errorStatus=" + response.getErrorStatusText() + "(" +
-		 * response.getErrorStatus() + ")"); printVariableBindings(response); }
-		 * } } catch (IOException ex) {
-		 * System.err.println("Error while trying to send request: " +
-		 * ex.getMessage()); ex.printStackTrace(); } } } catch
-		 * (IllegalArgumentException iaex) { System.err.print("Error: " +
-		 * iaex.getMessage()); iaex.printStackTrace(); }
-		 */
 	}
 
 }
