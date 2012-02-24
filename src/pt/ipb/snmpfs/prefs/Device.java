@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Device {
-	String address;
 	String name;
 	
 	String mountDir;
@@ -17,14 +16,6 @@ public class Device {
 	List<Entry> entries = new ArrayList<Entry>();
 	
 	public Device() {
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
 	}
 
 	public String getName() {

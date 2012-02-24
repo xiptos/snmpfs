@@ -25,6 +25,7 @@ public class SnmpBackend {
 	SnmpLL ll = new SnmpLL();
 
 	public SnmpBackend(SnmpPrefs prefs) throws IOException {
+		this.prefs = prefs;
 	}
 
 	public VariableBinding getNext(OID oid) throws IOException {
@@ -69,10 +70,28 @@ public class SnmpBackend {
 		return table;
 	}
 
+	public List<OID> walk(OID oid) throws IOException {
+		List<OID> walked = new ArrayList<OID>();
+
+		initLL(PDU.GETBULK);
+		ll.setVb(oid);
+		ll.setOperation(SnmpLL.WALK);
+		try {
+			ll.send();
+			for (VariableBinding vb : ll.getSnapshot()) {
+				walked.add(vb.getOid());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return walked;
+	}
+
 	public SnmpPrefs getPrefs() {
 		return prefs;
 	}
-	
+
 	public static void main(String[] args) {
 		try {
 			SnmpBackend snmp = new SnmpBackend(new SnmpPrefs(SnmpPrefs.Version.V2C, "public"));

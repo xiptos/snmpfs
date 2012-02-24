@@ -1,7 +1,5 @@
 package pt.ipb.snmpfs.prefs;
 
-import java.io.IOException;
-
 public class SnmpPrefs {
 	public enum Version {
 		V1, V2C, V3
@@ -35,7 +33,7 @@ public class SnmpPrefs {
 
 	public SnmpPrefs() {
 	}
-	
+
 	public SnmpPrefs(String userName, AuthProto authProto, String authPass, PrivProto privProto, String privPass) {
 		setVersion(Version.V3);
 		setUserName(userName);
@@ -44,24 +42,23 @@ public class SnmpPrefs {
 		setAuthProtocol(authProto);
 		setPrivProtocol(privProto);
 	}
-	
-	public SnmpPrefs(String userName, String authPass, String privPass) throws IOException {
+
+	public SnmpPrefs(String userName, String authPass, String privPass) {
 		this(userName, AuthProto.MD5, authPass, PrivProto.DES, privPass);
 	}
 
-	public SnmpPrefs(String userName, String authPass) throws IOException {
+	public SnmpPrefs(String userName, String authPass) {
 		this(userName, AuthProto.MD5, authPass, PrivProto.NONE, null);
 	}
 
-	public SnmpPrefs(String userName) throws IOException {
+	public SnmpPrefs(String userName) {
 		this(userName, AuthProto.NONE, null, PrivProto.NONE, null);
 	}
 
-	public SnmpPrefs(Version version, String community) throws IOException {
+	public SnmpPrefs(Version version, String community) {
 		setVersion(version);
 		setCommunity(community);
 	}
-
 
 	public String getUserName() {
 		return userName;
@@ -134,7 +131,5 @@ public class SnmpPrefs {
 	public void setCommunity(String community) {
 		this.community = community;
 	}
-
-	
 
 }

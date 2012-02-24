@@ -23,9 +23,7 @@ public class XmlHandler extends DefaultHandler {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		if ("device".equals(qName)) {
 			device = new Device();
-			String address = attributes.getValue("address");
 			String name = attributes.getValue("name");
-			device.setAddress(address);
 			device.setName(name);
 
 		} else if ("mount".equals(qName)) {
@@ -36,6 +34,40 @@ public class XmlHandler extends DefaultHandler {
 			String dir = attributes.getValue("dir");
 			device.setMibDir(dir);
 
+		} else if ("snmp".equals(qName)) {
+			String address = attributes.getValue("address");
+			String port = attributes.getValue("port");
+			String user = attributes.getValue("user");
+			String community = attributes.getValue("community");
+			String authProtocol = attributes.getValue("authProtocol");
+			String version = attributes.getValue("version");
+			String privProtocol = attributes.getValue("privProtocol");
+			String authPassphrase = attributes.getValue("authPassphrase");
+			String privPassphrase = attributes.getValue("privPassphrase");
+
+			SnmpPrefs prefs = new SnmpPrefs(user);
+			prefs.setHost(address);
+			prefs.setPort(Integer.parseInt(port));
+			if (authPassphrase != null) {
+				prefs.setAuthPassphrase(authPassphrase);
+			}
+			if (authProtocol != null) {
+				prefs.setAuthProtocol(SnmpPrefs.AuthProto.valueOf(authProtocol.toUpperCase()));
+			}
+			if (privProtocol != null) {
+				prefs.setPrivProtocol(SnmpPrefs.PrivProto.valueOf(privProtocol.toUpperCase()));
+			}
+			if (community != null) {
+				prefs.setCommunity(community);
+			}
+			if (privPassphrase != null) {
+				prefs.setPrivPassphrase(privPassphrase);
+			}
+			if (version != null) {
+				prefs.setVersion(SnmpPrefs.Version.valueOf(version.toUpperCase()));
+			}
+			device.setSnmpPrefs(prefs);
+
 		} else if ("mib".equals(qName)) {
 			String mib = attributes.getValue("file");
 			device.addMib(mib);
@@ -45,24 +77,26 @@ public class XmlHandler extends DefaultHandler {
 		} else if ("scalar".equals(qName)) {
 			String node = attributes.getValue("node");
 			String oid = attributes.getValue("oid");
-			Entry entry = new Entry(node, oid);
+			String name = attributes.getValue("name");
+			Entry entry = new Entry(node, oid, name);
 
 			device.addEntry(entry);
 
 		} else if ("table".equals(qName)) {
 			String node = attributes.getValue("node");
 			String oid = attributes.getValue("oid");
-			table = new Table(node, oid);
+			String name = attributes.getValue("name");
+			table = new Table(node, oid, name);
 
 		} else if ("col".equals(qName)) {
 			String node = attributes.getValue("node");
 			String oid = attributes.getValue("oid");
-			Entry entry = new Entry(node, oid);
+			String name = attributes.getValue("name");
+			Entry entry = new Entry(node, oid, name);
 
 			table.addCol(entry);
 		}
 	}
-	
 
 	public Device getDevice() {
 		return device;
@@ -79,10 +113,10 @@ public class XmlHandler extends DefaultHandler {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
 		XmlHandler handler = new XmlHandler();
-		
+
 		saxParser.parse(is, handler);
-		
+
 		return handler.getDevice();
 	}
-	
+
 }

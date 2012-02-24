@@ -3,13 +3,15 @@ package pt.ipb.snmpfs.prefs;
 public class Entry {
 	String node;
 	String oid;
+	String name;
 
 	public Entry() {
 	}
 	
-	public Entry(String node, String oid) {
+	public Entry(String node, String oid, String name) {
 		this.node = node;
 		this.oid = oid;
+		this.name = name;
 	}
 
 	public String getNode() {
@@ -28,4 +30,12 @@ public class Entry {
 		this.oid = oid;
 	}
 
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 }

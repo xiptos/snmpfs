@@ -1,30 +1,48 @@
 package pt.ipb.snmpfs;
 
-import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.fusejna.DirectoryFiller;
 import net.fusejna.ErrorCodes;
+import net.fusejna.StructFuseFileInfo.FileInfoWrapper;
 import net.fusejna.StructStat.StatWrapper;
 import net.fusejna.types.TypeMode.NodeType;
-
-import org.snmp4j.smi.OID;
+import pt.ipb.marser.MibException;
+import pt.ipb.snmpfs.prefs.Device;
+import pt.ipb.snmpfs.prefs.XmlHandler;
 
 public class SnmpFs extends AbstractFS {
-	public static final String ROOTDIR = "/";
 
-	FsTree tree;
+	Device device;
+	List<FsEntry> entries = new ArrayList<FsEntry>();
+	private SnmpBackend backend;
+	MibBackend mibBackend;
 
-	public SnmpFs(FsTree tree) {
-		this.tree = tree;
+	public SnmpFs(Device device) throws IOException, MibException {
+		this.device = device;
+		this.backend = new SnmpBackend(device.getSnmpPrefs());
+		this.mibBackend = new MibBackend(device.getMibDir(), device.getMibs());
+		
+		System.out.println(device.getSnmpPrefs().getHost());
+		entries.add(new WalkEntry(backend, mibBackend));
+		entries.add(new HelloEntry());
 	}
 
 	@Override
 	public int getattr(String path, StatWrapper stat) {
-		FsEntry entry = resolvePath(path);
+		if (path.equals(PATHSEP)) { // Root directory
+			stat.setMode(NodeType.DIRECTORY);
+			return 0;
+		}
+
+		FsEntry entry = resolveEntry(path);
+
+		NodeType t = null;
 		if (entry != null) {
-			NodeType t = null;
 			switch (entry.getType()) {
 			case BLOCK_DEVICE:
 				t = NodeType.BLOCK_DEVICE;
@@ -46,35 +64,53 @@ public class SnmpFs extends AbstractFS {
 				break;
 			}
 			stat.setMode(t, entry.isUr(), entry.isUw(), entry.isUx(), entry.isGr(), entry.isGw(), entry.isGx(),
-					entry.isOr(), entry.isOw(), entry.isOx());
+					entry.isOr(), entry.isOw(), entry.isOx()).size(entry.size());
 			return 0;
 		}
-		return ErrorCodes.ENOENT;
+		return -ErrorCodes.ENOENT;
 	};
+
+	private FsEntry resolveEntry(String path) {
+		String name = path.substring(1);
+		for (FsEntry entry : entries) {
+			if (name.equals(entry.getName())) {
+				return entry;
+			}
+		}
+		return null;
+	}
 
 	@Override
 	public int readdir(String path, DirectoryFiller filler) {
-		FsEntry node = resolvePath(path);
-		for(int i=0; i<tree.getChildCount(node); i++) {
-			FsEntry c = tree.getChild(node, i);
-			filler.add(c.getName());
+		for (FsEntry entry : entries) {
+			filler.add(PATHSEP+entry.getName());
 		}
 		return 0;
 	}
 
-	protected String toOIDString(String path) {
-		Pattern pattern = Pattern.compile("/");
-		Matcher matcher = pattern.matcher(path);
-		return matcher.replaceAll(".");
-	}
+	// protected String toOIDString(String path) {
+	// Pattern pattern = Pattern.compile("/");
+	// Matcher matcher = pattern.matcher(path);
+	// return matcher.replaceAll(".");
+	// }
+	//
+	// protected String oidToPath(OID oid) {
+	// StringBuilder str = new StringBuilder();
+	// for (int i : oid.getValue()) {
+	// str.append(ROOTDIR);
+	// str.append(i);
+	// }
+	// return str.toString();
+	// }
 
-	protected String oidToPath(OID oid) {
-		StringBuilder str = new StringBuilder();
-		for (int i : oid.getValue()) {
-			str.append(ROOTDIR);
-			str.append(i);
+	@Override
+	public int read(String path, ByteBuffer buffer, long size, long offset, FileInfoWrapper info) {
+		// Compute substring that we are being asked to read
+		FsEntry entry = resolveEntry(path);
+		if (entry != null) {
+			return entry.read(path, buffer, size, offset);
 		}
-		return str.toString();
+		return ErrorCodes.ENOENT;
 	}
 
 	/*
@@ -105,30 +141,29 @@ public class SnmpFs extends AbstractFS {
 	 * log.debug("flush: " + path); if (fh instanceof FileNode) return 0; return
 	 * Errno.EBADF; }
 	 */
-	private FsEntry resolvePath(String path) {
-		String[] pth = path.split(File.pathSeparator);
-		FsEntry node = tree.getRoot();
-		for(String name : pth) {
-			FsEntry child = tree.getChild(node, name);
-			if(child!=null) {
-				node = child;
-			}
-		}
-		return node;
-	}
+	// private FsEntry resolvePath(String path) {
+	// String[] pth = path.split(File.pathSeparator);
+	// FsEntry node = device.getRoot();
+	// for (String name : pth) {
+	// FsEntry child = device.getChild(node, name);
+	// if (child != null) {
+	// node = child;
+	// }
+	// }
+	// return node;
+	// }
 
 	public static void main(String[] args) {
 		if (args.length != 1) {
-			System.err.println("Usage: SnmpFS <mountpoint>");
+			System.err.println("Usage: SnmpFS <conf_file>");
 			System.exit(1);
 		}
 		try {
-			SnmpFsTree tree = new SnmpFsTree("bart", "bartsimpson");
-			tree.open();
-
-			new SnmpFs(tree).log(true).mount(args[0]);
+			Device device = XmlHandler.parse(new FileInputStream(args[0]));
+			SnmpFs fs = new SnmpFs(device);
+			fs.log(true).mount(device.getMountDir());
 		} catch (final Throwable e) {
-			System.err.println(e);
+			e.printStackTrace();
 		}
 	}
 

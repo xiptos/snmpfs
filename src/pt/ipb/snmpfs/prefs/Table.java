@@ -10,8 +10,8 @@ public class Table extends Entry {
 		setOid(oid);
 	}
 	
-	public Table(String node, String oid) {
-		super(node, oid);
+	public Table(String node, String oid, String name) {
+		super(node, oid, name);
 	}
 
 	public List<Entry> getCols() {
