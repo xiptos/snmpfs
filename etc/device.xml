@@ -2,7 +2,7 @@
 
 	<mount dir="tmp" />
 
-	<mibs dir="../../sciencespace/marser/mibs/">
+	<mibs dir="../marser/mibs/">
 		<mib file="SNMPv2-MIB"/>
 		<mib file="RFC1213-MIB"/>
 		<mib file="IF-MIB"/>
@@ -11,17 +11,22 @@
 	<snmp address="192.168.1.1" port="161" version="v2c" community="public" />
 
 	<entries>
-		<scalar node="sysUpTime" />
-		<scalar node="sysDescr" />
-		<table node="ifTable" />
-		<table oid="1.3.6.1.2.1.25.2.3." file="myTable">
-			<col oid="1.3.6.1.2.1.25.2.3.1.1." />
-			<col oid="1.3.6.1.2.1.25.2.3.1.2." />
-			<col oid="1.3.6.1.2.1.25.2.3.1.3." />
-			<col oid="1.3.6.1.2.1.25.2.3.1.4." />
-			<col oid="1.3.6.1.2.1.25.2.3.1.5." />
-			<col oid="1.3.6.1.2.1.25.2.3.1.6." />
-			<col oid="1.3.6.1.2.1.25.2.3.1.7." />
+		<scalar label="sysUpTime" />
+		<scalar label="sysDescr" />
+		<table label="ifTable" />
+		<table oid=".1.3.6.1.4.1.63.501.3.2.2" file="myTable">
+			<col oid=".1.3.6.1.4.1.63.501.3.2.2.1.1" />
+			<col oid=".1.3.6.1.4.1.63.501.3.2.2.1.2" />
+			<col oid=".1.3.6.1.4.1.63.501.3.2.2.1.3" />
+			<col oid=".1.3.6.1.4.1.63.501.3.2.2.1.4" />
+			<col oid=".1.3.6.1.4.1.63.501.3.2.2.1.5" />
+			<col oid=".1.3.6.1.4.1.63.501.3.2.2.1.6" />
+			<col oid=".1.3.6.1.4.1.63.501.3.2.2.1.7" />
+			<col oid=".1.3.6.1.4.1.63.501.3.2.2.1.8" />
+			<col oid=".1.3.6.1.4.1.63.501.3.2.2.1.9" />
+			<col oid=".1.3.6.1.4.1.63.501.3.2.2.1.10" />
+			<col oid=".1.3.6.1.4.1.63.501.3.2.2.1.11" />
+			<col oid=".1.3.6.1.4.1.63.501.3.2.2.1.12" />
 		</table>
 	</entries>
 

@@ -1,12 +1,15 @@
 package pt.ipb.snmpfs;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import pt.ipb.marser.MibException;
 import pt.ipb.marser.MibModule;
 import pt.ipb.marser.MibNode;
 import pt.ipb.marser.MibOps;
+import pt.ipb.marser.type.OID;
 
 public class MibBackend {
 	MibOps ops;
@@ -18,9 +21,28 @@ public class MibBackend {
 		}
 	}
 
+	public boolean isTable(String oid) {
+		MibNode tableNode = this.ops.getMibNode(oid);
+		return tableNode.isTable() || tableNode.isTableEntry();
+	}
+	
+	public List<String> getColumns(String oid) {
+		List<String> cols = new ArrayList<String>();
+		
+		MibNode tableNode = this.ops.getMibNode(new OID(oid));
+		if(tableNode.isTable() || tableNode.isTableEntry()) {
+			for(Enumeration<MibNode> en = tableNode.breadthFirstEnumeration(); en.hasMoreElements(); ) {
+				MibNode node = en.nextElement();
+				if(node.isTableColumn()) {
+					cols.add(node.getNumberedOIDString());
+				}
+			}
+		}
+		return cols;
+	}
+	
 	public String getCloserName(String oid) {
 		MibNode node = this.ops.getCloserNode(oid);
-		System.out.println(node+" - "+oid);
 		if(node!=null) {
 			return node.getLabel();
 		}

@@ -75,24 +75,23 @@ public class XmlHandler extends DefaultHandler {
 		} else if ("entries".equals(qName)) {
 
 		} else if ("scalar".equals(qName)) {
-			String node = attributes.getValue("node");
+			String label = attributes.getValue("label");
 			String oid = attributes.getValue("oid");
-			String name = attributes.getValue("name");
-			Entry entry = new Entry(node, oid, name);
+			String file = attributes.getValue("file");
+			Entry entry = new Entry(label, oid, file);
 
 			device.addEntry(entry);
 
 		} else if ("table".equals(qName)) {
-			String node = attributes.getValue("node");
+			String label = attributes.getValue("label");
 			String oid = attributes.getValue("oid");
-			String name = attributes.getValue("name");
-			table = new Table(node, oid, name);
+			String file = attributes.getValue("file");
+			table = new Table(label, oid, file);
 
 		} else if ("col".equals(qName)) {
-			String node = attributes.getValue("node");
+			String label = attributes.getValue("label");
 			String oid = attributes.getValue("oid");
-			String name = attributes.getValue("name");
-			Entry entry = new Entry(node, oid, name);
+			Entry entry = new Entry(label, oid);
 
 			table.addCol(entry);
 		}

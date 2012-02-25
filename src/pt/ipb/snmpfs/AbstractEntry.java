@@ -74,4 +74,8 @@ public abstract class AbstractEntry implements FsEntry {
 	public long size() {
 		return 0;
 	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
 }

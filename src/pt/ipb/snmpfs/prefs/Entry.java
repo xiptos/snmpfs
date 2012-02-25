@@ -1,25 +1,37 @@
 package pt.ipb.snmpfs.prefs;
 
 public class Entry {
-	String node;
+	String label;
 	String oid;
-	String name;
+	String file;
 
 	public Entry() {
 	}
 	
-	public Entry(String node, String oid, String name) {
-		this.node = node;
+	public Entry(String label, String oid, String file) {
+		this.label = label;
 		this.oid = oid;
-		this.name = name;
+		this.file = file;
 	}
 
-	public String getNode() {
-		return node;
+	public Entry(String label, String oid) {
+		this(label, oid, null);
 	}
 
-	public void setNode(String node) {
-		this.node = node;
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public String getFile() {
+		return file;
+	}
+
+	public void setFile(String file) {
+		this.file = file;
 	}
 
 	public String getOid() {
@@ -30,12 +42,4 @@ public class Entry {
 		this.oid = oid;
 	}
 
-	public String getName() {
-		return name;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
 }

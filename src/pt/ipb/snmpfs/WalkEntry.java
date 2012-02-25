@@ -31,7 +31,6 @@ public class WalkEntry extends AbstractEntry {
 	private void refreshContent() {
 		try {
 			List<OID> oids = backend.walk(new OID(".1"));
-			System.out.println("Refreshing content. Walked: "+oids.size());
 			StringBuilder str = new StringBuilder();
 			for(OID oid : oids) {
 				String label = mibBackend.getCloserName(oid.toString());

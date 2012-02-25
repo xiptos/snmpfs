@@ -13,6 +13,8 @@ import net.fusejna.StructStat.StatWrapper;
 import net.fusejna.types.TypeMode.NodeType;
 import pt.ipb.marser.MibException;
 import pt.ipb.snmpfs.prefs.Device;
+import pt.ipb.snmpfs.prefs.Entry;
+import pt.ipb.snmpfs.prefs.Table;
 import pt.ipb.snmpfs.prefs.XmlHandler;
 
 public class SnmpFs extends AbstractFS {
@@ -27,9 +29,19 @@ public class SnmpFs extends AbstractFS {
 		this.backend = new SnmpBackend(device.getSnmpPrefs());
 		this.mibBackend = new MibBackend(device.getMibDir(), device.getMibs());
 		
-		System.out.println(device.getSnmpPrefs().getHost());
+		initEntries();
+	}
+
+	private void initEntries() {
 		entries.add(new WalkEntry(backend, mibBackend));
 		entries.add(new HelloEntry());
+		for(Entry entry : device.getEntries()) {
+			if(entry instanceof Table) {
+				entries.add(new TableEntry((Table)entry, backend, mibBackend));
+			} else {
+				entries.add(new ScalarEntry(entry, backend, mibBackend));				
+			}
+		}
 	}
 
 	@Override

@@ -5,26 +5,25 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Vector;
 
-import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 
 public class SnmpTable {
-	List<OID> cols = new ArrayList<OID>();
-	LinkedHashMap<OID, List<VariableBinding>> rows = new LinkedHashMap<OID, List<VariableBinding>>();
+	List<String> cols = new ArrayList<String>();
+	LinkedHashMap<String, List<VariableBinding>> rows = new LinkedHashMap<String, List<VariableBinding>>();
 
 	public SnmpTable() {
 	}
 
-	public void addCol(OID oidCol, Vector<? extends VariableBinding> variableBindings) {
-		if (!cols.contains(oidCol)) {
-			cols.add(oidCol);
+	public void addCol(String col, Vector<? extends VariableBinding> variableBindings) {
+		if (!cols.contains(col)) {
+			cols.add(col);
 		}
 		List<VariableBinding> row = null;
-		if (rows.containsKey(oidCol)) {
-			row = rows.get(oidCol);
+		if (rows.containsKey(col)) {
+			row = rows.get(col);
 		} else {
 			row = new ArrayList<VariableBinding>();
-			rows.put(oidCol, row);
+			rows.put(col, row);
 		}
 		row.addAll(variableBindings);
 	}
@@ -41,20 +40,20 @@ public class SnmpTable {
 		return n;
 	}
 
-	public VariableBinding getValue(OID col, int row) {
+	public VariableBinding getValue(String col, int row) {
 		return rows.get(col).get(row);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder str = new StringBuilder();
-		for (OID col : cols) {
+		for (String col : cols) {
 			str.append(col.toString() + ";");
 		}
 		str.append("\n");
 		int nRows = getRowCount();
 		for (int i = 0; i < nRows; i++) {
-			for (OID col : cols) {
+			for (String col : cols) {
 				str.append(getValue(col, i).getVariable().toString() + ";");
 			}
 			str.append("\n");
