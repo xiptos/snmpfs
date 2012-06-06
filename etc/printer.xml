@@ -1,0 +1,20 @@
+<device name="printer">
+
+	<mount dir="mnt/printer" />
+
+	<mibs dir="../marser/mibs/">
+		<mib file="SNMPv2-MIB"/>
+		<mib file="RFC1213-MIB"/>
+		<mib file="HOST-RESOURCES-MIB"/>
+		<mib file="Printer-MIB"/>
+	</mibs>
+
+	<snmp address="192.168.1.9" port="161" version="v1" community="public" />
+
+	<entries>
+		<scalar label="sysUpTime" />
+		<scalar label="sysDescr" />
+		<table label="prtMarkerSuppliesTable" />
+	</entries>
+
+</device>

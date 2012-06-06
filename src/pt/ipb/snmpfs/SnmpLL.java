@@ -27,7 +27,13 @@ import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.mp.StateReference;
 import org.snmp4j.mp.StatusInformation;
+import org.snmp4j.security.AuthMD5;
+import org.snmp4j.security.AuthSHA;
 import org.snmp4j.security.Priv3DES;
+import org.snmp4j.security.PrivAES128;
+import org.snmp4j.security.PrivAES192;
+import org.snmp4j.security.PrivAES256;
+import org.snmp4j.security.PrivDES;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
@@ -105,7 +111,8 @@ public class SnmpLL implements PDUFactory {
 	public SnmpLL() {
 		// Set the default counter listener to return proper USM and MP error
 		// counters.
-		CounterSupport.getInstance().addCounterListener(new DefaultCounterListener());
+		CounterSupport.getInstance().addCounterListener(
+				new DefaultCounterListener());
 	}
 
 	public int getPduType() {
@@ -201,14 +208,18 @@ public class SnmpLL implements PDUFactory {
 	}
 
 	private void checkOptions() {
-		if ((operation == WALK) && ((pduType != PDU.GETBULK) && (pduType != PDU.GETNEXT))) {
-			throw new IllegalArgumentException("Walk operation is not supported for PDU type: "
-					+ PDU.getTypeString(pduType));
+		if ((operation == WALK)
+				&& ((pduType != PDU.GETBULK) && (pduType != PDU.GETNEXT))) {
+			throw new IllegalArgumentException(
+					"Walk operation is not supported for PDU type: "
+							+ PDU.getTypeString(pduType));
 		} else if ((operation == WALK) && (vbs.size() != 1)) {
-			throw new IllegalArgumentException("There must be exactly one OID supplied for walk operations");
+			throw new IllegalArgumentException(
+					"There must be exactly one OID supplied for walk operations");
 		}
 		if ((pduType == PDU.V1TRAP) && (version != SnmpConstants.version1)) {
-			throw new IllegalArgumentException("V1TRAP PDU type is only available for SNMP version 1");
+			throw new IllegalArgumentException(
+					"V1TRAP PDU type is only available for SNMP version 1");
 		}
 	}
 
@@ -219,13 +230,16 @@ public class SnmpLL implements PDUFactory {
 		} else {
 			transport = new DefaultUdpTransportMapping((UdpAddress) address);
 		}
-		ThreadPool threadPool = ThreadPool.create("DispatcherPool", numDispatcherThreads);
-		MessageDispatcher mtDispatcher = new MultiThreadedMessageDispatcher(threadPool, new MessageDispatcherImpl());
+		ThreadPool threadPool = ThreadPool.create("DispatcherPool",
+				numDispatcherThreads);
+		MessageDispatcher mtDispatcher = new MultiThreadedMessageDispatcher(
+				threadPool, new MessageDispatcherImpl());
 
 		// add message processing models
 		mtDispatcher.addMessageProcessingModel(new MPv1());
 		mtDispatcher.addMessageProcessingModel(new MPv2c());
-		mtDispatcher.addMessageProcessingModel(new MPv3(localEngineID.getValue()));
+		mtDispatcher.addMessageProcessingModel(new MPv3(localEngineID
+				.getValue()));
 
 		// add all security protocols
 		SecurityProtocols.getInstance().addDefaultProtocols();
@@ -254,8 +268,10 @@ public class SnmpLL implements PDUFactory {
 	}
 
 	private void addUsmUser(Snmp snmp) {
-		snmp.getUSM().addUser(securityName,
-				new UsmUser(securityName, authProtocol, authPassphrase, privProtocol, privPassphrase));
+		snmp.getUSM().addUser(
+				securityName,
+				new UsmUser(securityName, authProtocol, authPassphrase,
+						privProtocol, privPassphrase));
 	}
 
 	private Snmp createSnmpSession() throws IOException {
@@ -270,13 +286,16 @@ public class SnmpLL implements PDUFactory {
 		// Could save some CPU cycles:
 		// transport.setAsyncMsgProcessingSupported(false);
 		Snmp snmp = new Snmp(transport);
-		((MPv3) snmp.getMessageProcessingModel(MPv3.ID)).setLocalEngineID(localEngineID.getValue());
+		((MPv3) snmp.getMessageProcessingModel(MPv3.ID))
+				.setLocalEngineID(localEngineID.getValue());
 
 		if (version == SnmpConstants.version3) {
-			USM usm = new USM(SecurityProtocols.getInstance(), localEngineID, engineBootCount);
+			USM usm = new USM(SecurityProtocols.getInstance(), localEngineID,
+					engineBootCount);
 			SecurityModels.getInstance().addSecurityModel(usm);
 			addUsmUser(snmp);
-			SecurityModels.getInstance().addSecurityModel(new TSM(localEngineID, false));
+			SecurityModels.getInstance().addSecurityModel(
+					new TSM(localEngineID, false));
 		}
 		return snmp;
 	}
@@ -295,7 +314,8 @@ public class SnmpLL implements PDUFactory {
 			}
 			target.setSecurityName(securityName);
 			if (authoritativeEngineID != null) {
-				target.setAuthoritativeEngineID(authoritativeEngineID.getValue());
+				target.setAuthoritativeEngineID(authoritativeEngineID
+						.getValue());
 			}
 			if (address instanceof TlsAddress) {
 				target.setSecurityModel(TSM.SECURITY_MODEL_TSM);
@@ -334,12 +354,13 @@ public class SnmpLL implements PDUFactory {
 			return null;
 		} else {
 			ResponseEvent responseEvent;
-			long startTime = System.nanoTime();
+//			long startTime = System.nanoTime();
 			responseEvent = snmp.send(request, target);
 			if (responseEvent != null) {
 				response = responseEvent.getResponse();
-				System.out.println("Received response after " + (System.nanoTime() - startTime) / 1000000
-						+ " milliseconds");
+//				System.out.println("Received response after "
+//						+ (System.nanoTime() - startTime) / 1000000
+//						+ " milliseconds");
 			}
 		}
 		snmp.close();
@@ -370,16 +391,20 @@ public class SnmpLL implements PDUFactory {
 			}
 
 			public void finished(TreeEvent e) {
-				if ((e.getVariableBindings() != null) && (e.getVariableBindings().length > 0)) {
+				if ((e.getVariableBindings() != null)
+						&& (e.getVariableBindings().length > 0)) {
 					next(e);
 				}
 				System.out.println();
-				System.out.println("Total requests sent:    " + counts.requests);
+				System.out
+						.println("Total requests sent:    " + counts.requests);
 				System.out.println("Total objects received: " + counts.objects);
-				System.out.println("Total walk time:        " + (System.nanoTime() - startTime) / 1000000
+				System.out.println("Total walk time:        "
+						+ (System.nanoTime() - startTime) / 1000000
 						+ " milliseconds");
 				if (e.isError()) {
-					System.err.println("The following error occurred during walk:");
+					System.err
+							.println("The following error occurred during walk:");
 					System.err.println(e.getErrorMessage());
 				}
 				finished = true;
@@ -398,7 +423,8 @@ public class SnmpLL implements PDUFactory {
 			try {
 				treeListener.wait();
 			} catch (InterruptedException ex) {
-				System.err.println("Tree retrieval interrupted: " + ex.getMessage());
+				System.err.println("Tree retrieval interrupted: "
+						+ ex.getMessage());
 				Thread.currentThread().interrupt();
 			}
 		}
@@ -442,6 +468,7 @@ public class SnmpLL implements PDUFactory {
 	}
 
 	private static OctetString createOctetString(String s) {
+		if(s==null) return null;
 		OctetString octetString;
 		if (s.startsWith("0x")) {
 			octetString = OctetString.fromHexString(s.substring(2), ':');
@@ -460,7 +487,8 @@ public class SnmpLL implements PDUFactory {
 
 	protected static void printReport(PDU response) {
 		if (response.size() < 1) {
-			System.out.println("REPORT PDU does not contain a variable binding.");
+			System.out
+					.println("REPORT PDU does not contain a variable binding.");
 			return;
 		}
 
@@ -489,28 +517,35 @@ public class SnmpLL implements PDUFactory {
 		} else if (SnmpConstants.snmpUnknownContexts.equals(oid)) {
 			System.out.print("REPORT: Unknown context.");
 		} else {
-			System.out.print("REPORT contains unknown OID (" + oid.toString() + ").");
+			System.out.print("REPORT contains unknown OID (" + oid.toString()
+					+ ").");
 		}
-		System.out.println(" Current counter value is " + vb.getVariable().toString() + ".");
+		System.out.println(" Current counter value is "
+				+ vb.getVariable().toString() + ".");
 	}
 
 	public synchronized void processPdu(CommandResponderEvent e) {
 		PDU command = e.getPDU();
 		if (command != null) {
 			System.out.println(command.toString());
-			if ((command.getType() != PDU.TRAP) && (command.getType() != PDU.V1TRAP)
-					&& (command.getType() != PDU.REPORT) && (command.getType() != PDU.RESPONSE)) {
+			if ((command.getType() != PDU.TRAP)
+					&& (command.getType() != PDU.V1TRAP)
+					&& (command.getType() != PDU.REPORT)
+					&& (command.getType() != PDU.RESPONSE)) {
 				command.setErrorIndex(0);
 				command.setErrorStatus(0);
 				command.setType(PDU.RESPONSE);
 				StatusInformation statusInformation = new StatusInformation();
 				StateReference ref = e.getStateReference();
 				try {
-					e.getMessageDispatcher().returnResponsePdu(e.getMessageProcessingModel(), e.getSecurityModel(),
-							e.getSecurityName(), e.getSecurityLevel(), command, e.getMaxSizeResponsePDU(), ref,
-							statusInformation);
+					e.getMessageDispatcher().returnResponsePdu(
+							e.getMessageProcessingModel(),
+							e.getSecurityModel(), e.getSecurityName(),
+							e.getSecurityLevel(), command,
+							e.getMaxSizeResponsePDU(), ref, statusInformation);
 				} catch (MessageException ex) {
-					System.err.println("Error while sending response: " + ex.getMessage());
+					System.err.println("Error while sending response: "
+							+ ex.getMessage());
 					LogFactory.getLogger(SnmpRequest.class).error(ex);
 				}
 			}
@@ -562,9 +597,11 @@ public class SnmpLL implements PDUFactory {
 				listener = new CVSTableListener(System.nanoTime());
 			}
 			if (useDenseTableOperation) {
-				tableUtils.getDenseTable(target, columns, listener, counter, lowerBoundIndex, upperBoundIndex);
+				tableUtils.getDenseTable(target, columns, listener, counter,
+						lowerBoundIndex, upperBoundIndex);
 			} else {
-				tableUtils.getTable(target, columns, listener, counter, lowerBoundIndex, upperBoundIndex);
+				tableUtils.getTable(target, columns, listener, counter,
+						lowerBoundIndex, upperBoundIndex);
 			}
 			try {
 				counter.wait(timeout);
@@ -572,7 +609,8 @@ public class SnmpLL implements PDUFactory {
 				Thread.currentThread().interrupt();
 			}
 		}
-		System.out.println("Table received in " + (System.nanoTime() - startTime) / 1000000 + " milliseconds.");
+		System.out.println("Table received in "
+				+ (System.nanoTime() - startTime) / 1000000 + " milliseconds.");
 		snmp.close();
 	}
 
@@ -626,7 +664,8 @@ public class SnmpLL implements PDUFactory {
 				String value = v.toString();
 				switch (v.getSyntax()) {
 				case SMIConstants.SYNTAX_OCTET_STRING: {
-					StringBuffer escapedString = new StringBuffer(value.length());
+					StringBuffer escapedString = new StringBuffer(
+							value.length());
 					StringTokenizer st = new StringTokenizer(value, "\"", true);
 					while (st.hasMoreTokens()) {
 						String token = st.nextToken();
@@ -675,8 +714,9 @@ public class SnmpLL implements PDUFactory {
 
 		public void finished(TableEvent event) {
 			System.out.println();
-			System.out.println("Table walk completed with status " + event.getStatus() + ". Received "
-					+ event.getUserObject() + " rows.");
+			System.out.println("Table walk completed with status "
+					+ event.getStatus() + ". Received " + event.getUserObject()
+					+ " rows.");
 			finished = true;
 			synchronized (event.getUserObject()) {
 				event.getUserObject().notify();
@@ -765,6 +805,21 @@ public class SnmpLL implements PDUFactory {
 		this.retries = retries;
 	}
 
+	public void setPrivProtocol(String pp) {
+		if ("DES".equalsIgnoreCase(pp)) {
+			privProtocol = PrivDES.ID;
+		} else if (("AES128".equalsIgnoreCase(pp))
+				|| ("AES".equalsIgnoreCase(pp))) {
+			privProtocol = PrivAES128.ID;
+		} else if ("AES192".equalsIgnoreCase(pp)) {
+			privProtocol = PrivAES192.ID;
+		} else if ("AES256".equalsIgnoreCase(pp)) {
+			privProtocol = PrivAES256.ID;
+		} else if ("3DES".equalsIgnoreCase(pp) || "DESEDE".equalsIgnoreCase(pp)) {
+			privProtocol = Priv3DES.ID;
+		}
+	}
+
 	public void setPrivProtocol(OID privProtocol) {
 		this.privProtocol = privProtocol;
 	}
@@ -827,6 +882,16 @@ public class SnmpLL implements PDUFactory {
 
 	public void setAuthoritativeEngineID(OctetString authoritativeEngineID) {
 		this.authoritativeEngineID = authoritativeEngineID;
+	}
+
+	public void setAuthProtocol(String ap) {
+		if ("MD5".equalsIgnoreCase(ap)) {
+			authProtocol = AuthMD5.ID;
+		} else if ("SHA".equalsIgnoreCase(ap)) {
+			authProtocol = AuthSHA.ID;
+		} else {
+			authProtocol = null;
+		}
 	}
 
 	public void setAuthProtocol(OID authProtocol) {

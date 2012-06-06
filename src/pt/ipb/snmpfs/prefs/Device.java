@@ -66,4 +66,12 @@ public class Device {
 		this.entries.add(entry);
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder str = new StringBuilder("SNMP Device:");
+		str.append("\n");
+		str.append("\tName: "+getName()+"\n");
+		str.append("\tPrefs: "+getSnmpPrefs()+"\n");
+		return str.toString();
+	}
 }

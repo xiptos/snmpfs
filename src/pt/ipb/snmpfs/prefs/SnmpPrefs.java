@@ -10,7 +10,7 @@ public class SnmpPrefs {
 	}
 
 	public enum PrivProto {
-		NONE, SHA, DES, AES
+		NONE, SHA, DES, AES, AES128, AES192, AES256, TRIPDES, DESEDE
 	}
 
 	String userName;
@@ -31,10 +31,13 @@ public class SnmpPrefs {
 
 	String community;
 
+	String context;
+
 	public SnmpPrefs() {
 	}
 
-	public SnmpPrefs(String userName, AuthProto authProto, String authPass, PrivProto privProto, String privPass) {
+	public SnmpPrefs(String userName, AuthProto authProto, String authPass,
+			PrivProto privProto, String privPass) {
 		setVersion(Version.V3);
 		setUserName(userName);
 		setAuthPassphrase(authPass);
@@ -132,4 +135,28 @@ public class SnmpPrefs {
 		this.community = community;
 	}
 
+	public void setContext(String context) {
+		this.context = context;
+	}
+
+	public String getContext() {
+		return context;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder str = new StringBuilder();
+		str.append("\tVersion: " + getVersion() + "\n");
+		str.append("\tAuthPassphrase: " + getAuthPassphrase() + "\n");
+		str.append("\tCommunity: " + getCommunity() + "\n");
+		str.append("\tHost: " + getHost() + "\n");
+		str.append("\tPort: " + getPort() + "\n");
+		str.append("\tPrivPassphrase: " + getPrivPassphrase() + "\n");
+		str.append("\tUserName: " + getUserName() + "\n");
+		str.append("\tAuthProtocol: " + getAuthProtocol() + "\n");
+		str.append("\tPrivProtocol: " + getPrivProtocol() + "\n");
+		str.append("\tContext: " + getContext() + "\n");
+
+		return str.toString();
+	}
 }

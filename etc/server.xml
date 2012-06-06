@@ -1,0 +1,19 @@
+<device name="server">
+
+	<mount dir="mnt/server" />
+
+	<mibs dir="../marser/mibs/">
+		<mib file="SNMPv2-MIB"/>
+		<mib file="RFC1213-MIB"/>
+		<mib file="HOST-RESOURCES-MIB"/>
+	</mibs>
+
+	<snmp address="192.168.1.78" port="161" version="v3" user="bart" authProtocol="MD5" authPassphrase="bartsimpson" />
+
+	<entries>
+		<scalar label="sysUpTime" />
+		<scalar label="sysDescr" />
+		<table label="hrProcessorTable" />
+	</entries>
+
+</device>

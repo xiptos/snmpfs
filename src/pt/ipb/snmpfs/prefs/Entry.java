@@ -1,20 +1,22 @@
 package pt.ipb.snmpfs.prefs;
 
+import pt.ipb.marser.type.OID;
+
 public class Entry {
 	String label;
-	String oid;
+	OID oid;
 	String file;
 
 	public Entry() {
 	}
 	
-	public Entry(String label, String oid, String file) {
+	public Entry(String label, OID oid, String file) {
 		this.label = label;
 		this.oid = oid;
 		this.file = file;
 	}
 
-	public Entry(String label, String oid) {
+	public Entry(String label, OID oid) {
 		this(label, oid, null);
 	}
 
@@ -34,11 +36,11 @@ public class Entry {
 		this.file = file;
 	}
 
-	public String getOid() {
+	public OID getOid() {
 		return oid;
 	}
 
-	public void setOid(String oid) {
+	public void setOid(OID oid) {
 		this.oid = oid;
 	}
 

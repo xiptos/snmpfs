@@ -34,7 +34,7 @@ public class SnmpFs extends AbstractFS {
 
 	private void initEntries() {
 		entries.add(new WalkEntry(backend, mibBackend));
-		entries.add(new HelloEntry());
+//		entries.add(new HelloEntry());
 		for(Entry entry : device.getEntries()) {
 			if(entry instanceof Table) {
 				entries.add(new TableEntry((Table)entry, backend, mibBackend));
@@ -173,7 +173,7 @@ public class SnmpFs extends AbstractFS {
 		try {
 			Device device = XmlHandler.parse(new FileInputStream(args[0]));
 			SnmpFs fs = new SnmpFs(device);
-			fs.log(true).mount(device.getMountDir());
+			fs.log(false).mount(device.getMountDir());
 		} catch (final Throwable e) {
 			e.printStackTrace();
 		}

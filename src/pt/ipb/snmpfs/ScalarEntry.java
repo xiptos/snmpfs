@@ -3,15 +3,14 @@ package pt.ipb.snmpfs;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.snmp4j.smi.OID;
-import org.snmp4j.smi.VariableBinding;
-
+import pt.ipb.marser.type.OID;
+import pt.ipb.marser.type.VarBind;
 import pt.ipb.snmpfs.prefs.Entry;
 
 public class ScalarEntry extends AbstractEntry {
 	private SnmpBackend backend;
 	String content = null;
-	String oid;
+	OID oid;
 
 	public ScalarEntry(Entry entry, SnmpBackend backend, MibBackend mibBackend) {
 		this.oid = entry.getOid();
@@ -20,18 +19,18 @@ public class ScalarEntry extends AbstractEntry {
 			if(label==null) {
 				throw new IllegalArgumentException("OID or Label cannot be null");
 			}
-			this.oid = mibBackend.getOid(label);
+			this.oid = new OID(mibBackend.getOid(label));
 		}
 
-		if(!this.oid.endsWith(".0")) {
-			this.oid = this.oid+".0";
+		if(!this.oid.endsWith(new OID(".0"))) {
+			this.oid.append(0);
 		}
 		
 		String name = entry.getFile();
 		if(name==null) {
 			name = label;
 			if(name==null) {
-				name = mibBackend.getCloserName(oid);
+				name = mibBackend.getCloserName(oid.toString());
 			}
 		}
 		setName(name);
@@ -50,8 +49,8 @@ public class ScalarEntry extends AbstractEntry {
 	
 	private void refreshContent() {
 		try {
-			VariableBinding vb = backend.get(new OID(oid));
-			this.content = vb.getVariable().toString()+"\n";
+			VarBind vb = backend.get(oid);
+			this.content = vb.getValue().toString()+"\n";
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

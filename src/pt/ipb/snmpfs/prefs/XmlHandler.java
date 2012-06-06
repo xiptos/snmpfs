@@ -11,6 +11,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import pt.ipb.marser.type.OID;
+
 public class XmlHandler extends DefaultHandler {
 
 	protected Device device;
@@ -44,6 +46,7 @@ public class XmlHandler extends DefaultHandler {
 			String privProtocol = attributes.getValue("privProtocol");
 			String authPassphrase = attributes.getValue("authPassphrase");
 			String privPassphrase = attributes.getValue("privPassphrase");
+			String context = attributes.getValue("context");
 
 			SnmpPrefs prefs = new SnmpPrefs(user);
 			prefs.setHost(address);
@@ -66,6 +69,9 @@ public class XmlHandler extends DefaultHandler {
 			if (version != null) {
 				prefs.setVersion(SnmpPrefs.Version.valueOf(version.toUpperCase()));
 			}
+			if (context != null) {
+				prefs.setContext(context);
+			}
 			device.setSnmpPrefs(prefs);
 
 		} else if ("mib".equals(qName)) {
@@ -78,7 +84,7 @@ public class XmlHandler extends DefaultHandler {
 			String label = attributes.getValue("label");
 			String oid = attributes.getValue("oid");
 			String file = attributes.getValue("file");
-			Entry entry = new Entry(label, oid, file);
+			Entry entry = new Entry(label, new OID(oid), file);
 
 			device.addEntry(entry);
 
@@ -86,12 +92,12 @@ public class XmlHandler extends DefaultHandler {
 			String label = attributes.getValue("label");
 			String oid = attributes.getValue("oid");
 			String file = attributes.getValue("file");
-			table = new Table(label, oid, file);
+			table = new Table(label, new OID(oid), file);
 
 		} else if ("col".equals(qName)) {
 			String label = attributes.getValue("label");
 			String oid = attributes.getValue("oid");
-			Entry entry = new Entry(label, oid);
+			Entry entry = new Entry(label, new OID(oid));
 
 			table.addCol(entry);
 		}

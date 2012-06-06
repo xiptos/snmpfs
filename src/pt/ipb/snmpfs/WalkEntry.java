@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import org.snmp4j.smi.OID;
+import pt.ipb.marser.type.OID;
 
 public class WalkEntry extends AbstractEntry {
 	

@@ -3,14 +3,16 @@ package pt.ipb.snmpfs.prefs;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.ipb.marser.type.OID;
+
 public class Table extends Entry {
 	List<Entry> cols = new ArrayList<Entry>();
 
-	public Table(String oid) {
+	public Table(OID oid) {
 		setOid(oid);
 	}
 	
-	public Table(String node, String oid, String name) {
+	public Table(String node, OID oid, String name) {
 		super(node, oid, name);
 	}
 
