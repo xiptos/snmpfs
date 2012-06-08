@@ -4,57 +4,14 @@ import java.nio.ByteBuffer;
 
 public abstract class AbstractEntry implements FsEntry {
 	String name;
+	FsEntryAttrs attrs = null;
+	FsEntryInfo info = new FsEntryInfo();
 	
 	public AbstractEntry() {
 	}
 	
 	public AbstractEntry(String name) {
 		this.name = name;
-	}
-
-	@Override
-	public boolean isUr() {
-		return true;
-	}
-
-	@Override
-	public boolean isUw() {
-		return false;
-	}
-
-	@Override
-	public boolean isUx() {
-		return false;
-	}
-
-	@Override
-	public boolean isGr() {
-		return false;
-	}
-
-	@Override
-	public boolean isGw() {
-		return false;
-	}
-
-	@Override
-	public boolean isGx() {
-		return false;
-	}
-
-	@Override
-	public boolean isOr() {
-		return false;
-	}
-
-	@Override
-	public boolean isOw() {
-		return false;
-	}
-
-	@Override
-	public boolean isOx() {
-		return false;
 	}
 
 	@Override
@@ -70,12 +27,26 @@ public abstract class AbstractEntry implements FsEntry {
 		return 0;
 	}
 	
-	@Override
-	public long size() {
-		return 0;
-	}
-	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	@Override
+	public FsEntryAttrs getAttrs() {
+		if(attrs == null) {
+			attrs = new FsEntryAttrs();
+			update();
+		}
+		return attrs;
+	}
+	
+	@Override
+	public FsEntryInfo getInfo() {
+		return info;
+	}
+	
+	@Override
+	public int update() {
+		return 0;
 	}
 }

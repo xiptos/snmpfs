@@ -75,8 +75,10 @@ public class SnmpFs extends AbstractFS {
 				t = NodeType.SYMBOLIC_LINK;
 				break;
 			}
-			stat.setMode(t, entry.isUr(), entry.isUw(), entry.isUx(), entry.isGr(), entry.isGw(), entry.isGx(),
-					entry.isOr(), entry.isOw(), entry.isOx()).size(entry.size());
+			FsEntryAttrs attrs = entry.getAttrs();
+			stat.setMode(t, attrs.isUr(), attrs.isUw(), attrs.isUx(), attrs.isGr(), attrs.isGw(), attrs.isGx(),
+					attrs.isOr(), attrs.isOw(), attrs.isOx()).size(attrs.getSize());
+			stat.setAllTimesMillis(attrs.getTime());
 			return 0;
 		}
 		return -ErrorCodes.ENOENT;
@@ -115,6 +117,17 @@ public class SnmpFs extends AbstractFS {
 	// return str.toString();
 	// }
 
+	@Override
+	public int open(String path, FileInfoWrapper info) {
+		// Compute substring that we are being asked to read
+		FsEntry entry = resolveEntry(path);
+		if (entry != null) {
+			info.direct_io(!entry.getInfo().isUseCache());
+			return entry.update();
+		}
+		return ErrorCodes.ENOENT;
+	}
+	
 	@Override
 	public int read(String path, ByteBuffer buffer, long size, long offset, FileInfoWrapper info) {
 		// Compute substring that we are being asked to read

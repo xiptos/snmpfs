@@ -17,6 +17,8 @@ import org.snmp4j.smi.VariableBinding;
 
 import pt.ipb.marser.SnmpConstants;
 import pt.ipb.marser.type.OID;
+import pt.ipb.marser.type.Str;
+import pt.ipb.marser.type.TimeTicks;
 import pt.ipb.marser.type.Var;
 import pt.ipb.marser.type.VarBind;
 import pt.ipb.snmpfs.prefs.SnmpPrefs;
@@ -44,48 +46,49 @@ public class SnmpBackend {
 	}
 
 	private Var toVar(Variable var) {
-		byte type = SnmpConstants.INTEGER;
+		Var v = null;
 		switch (var.getSyntax()) {
 		case SMIConstants.SYNTAX_INTEGER32:
-			type = SnmpConstants.INTEGER32;
+			v = Var.createVar(var.toString(), SnmpConstants.INTEGER32);
 			break;
 		// case SMIConstants.SYNTAX_BITS: type = SnmpConstants.BITS; break;
 		case SMIConstants.SYNTAX_COUNTER32:
-			type = SnmpConstants.COUNTER32;
+			v = Var.createVar(var.toString(), SnmpConstants.COUNTER32);
 			break;
 		case SMIConstants.SYNTAX_COUNTER64:
-			type = SnmpConstants.COUNTER64;
+			v = Var.createVar(var.toString(), SnmpConstants.COUNTER64);
 			break;
 		case SMIConstants.SYNTAX_GAUGE32:
-			type = SnmpConstants.GAUGE32;
+			v = Var.createVar(var.toString(), SnmpConstants.GAUGE32);
 			break;
 		case SMIConstants.SYNTAX_IPADDRESS:
-			type = SnmpConstants.IPADDRESS;
+			v = Var.createVar(var.toString(), SnmpConstants.IPADDRESS);
 			break;
 		case SMIConstants.SYNTAX_NULL:
-			type = SnmpConstants.NULL;
+			v = Var.createVar(var.toString(), SnmpConstants.NULL);
 			break;
 		case SMIConstants.SYNTAX_OBJECT_IDENTIFIER:
-			type = SnmpConstants.OID;
+			v = Var.createVar(var.toString(), SnmpConstants.OID);
 			break;
 		case SMIConstants.SYNTAX_OCTET_STRING:
-			type = SnmpConstants.OCTETSTRING;
+			v = new Str(var.toString()).toVar();
 			break;
 		case SMIConstants.SYNTAX_OPAQUE:
-			type = SnmpConstants.OPAQUE;
+			v = Var.createVar(var.toString(), SnmpConstants.OPAQUE);
 			break;
 		case SMIConstants.SYNTAX_TIMETICKS:
-			type = SnmpConstants.TIMETICKS;
+			v = new TimeTicks(((org.snmp4j.smi.TimeTicks)var).getValue());
 			break;
 		// case SMIConstants.SYNTAX_UNSIGNED_INTEGER32: type =
 		// SnmpConstants.UNSIGNED32; break;
 
 		}
-		return Var.createVar(var.toString(), type);
+		return v;
 	}
 
 	private void initLL(int pduType) {
 		ll.setAddress("udp", prefs.getHost(), prefs.getPort());
+		ll.setPduType(pduType);
 		if (prefs.getVersion().equals(SnmpPrefs.Version.V3)) {
 			ll.setAuthPassphrase(prefs.getAuthPassphrase());
 			ll.setAuthProtocol(prefs.getAuthProtocol().toString());
@@ -98,7 +101,6 @@ public class SnmpBackend {
 
 		} else {
 			ll.setCommunity(prefs.getCommunity());
-			ll.setPduType(pduType);
 			if (prefs.getVersion().equals(SnmpPrefs.Version.V2C)) {
 				ll.setVersion(org.snmp4j.mp.SnmpConstants.version2c);
 			} else {

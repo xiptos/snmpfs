@@ -5,6 +5,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.fusejna.ErrorCodes;
+
 import pt.ipb.marser.type.OID;
 import pt.ipb.snmpfs.prefs.Entry;
 import pt.ipb.snmpfs.prefs.Table;
@@ -60,16 +62,7 @@ public class TableEntry extends AbstractEntry {
 	}
 
 	@Override
-	public long size() {
-		if (content == null) {
-			refreshContent();
-			return 0;
-		} else {
-			return content.length();
-		}
-	}
-
-	private void refreshContent() {
+	public int update() {
 		try {
 			SnmpTable snmpTable = backend.getTable(root, cols);
 			StringBuilder str = new StringBuilder();
@@ -86,15 +79,19 @@ public class TableEntry extends AbstractEntry {
 				str.append("\n");
 			}
 			content = str.toString();
+			getAttrs().setSize(content.length());
+			getAttrs().setTime(System.currentTimeMillis());
 		} catch (IOException e) {
 			e.printStackTrace();
+			return ErrorCodes.ENOENT;
 		}
+		return 0;
 	}
 
 	@Override
 	public int read(String path, ByteBuffer buffer, long size, long offset) {
 		if (content == null) {
-			refreshContent();
+			update();
 		}
 		final String s = content.substring(
 				(int) offset,

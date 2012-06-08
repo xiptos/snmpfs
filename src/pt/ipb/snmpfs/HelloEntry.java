@@ -10,16 +10,14 @@ public class HelloEntry extends AbstractEntry {
 		super("hello.txt");
 	}
 
-	@Override
-	public long size() {
-		return content.length();
-	}
 
 	@Override
 	public int read(String path, ByteBuffer buffer, long size, long offset) {
 		final String s = content.substring((int) offset,
 				(int) Math.max(offset, Math.min(content.length() - offset, offset + size)));
 		buffer.put(s.getBytes());
+		getAttrs().setSize(content.length());
+		getAttrs().setTime(System.currentTimeMillis());
 		return s.getBytes().length;
 	}
 

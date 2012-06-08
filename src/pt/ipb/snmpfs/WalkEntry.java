@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import net.fusejna.ErrorCodes;
+
 import pt.ipb.marser.type.OID;
 
 public class WalkEntry extends AbstractEntry {
@@ -19,16 +21,7 @@ public class WalkEntry extends AbstractEntry {
 	}
 
 	@Override
-	public long size() {
-		if(content==null) {
-			refreshContent();
-			return 0;
-		} else {
-			return content.length();
-		}
-	}
-	
-	private void refreshContent() {
+	public int update() {
 		try {
 			List<OID> oids = backend.walk(new OID(".1"));
 			StringBuilder str = new StringBuilder();
@@ -37,15 +30,19 @@ public class WalkEntry extends AbstractEntry {
 				str.append(label+";"+oid.toString()+"\n");
 			}
 			this.content = str.toString();
+			getAttrs().setSize(this.content.length());
+			getAttrs().setTime(System.currentTimeMillis());
 		} catch (IOException e) {
 			e.printStackTrace();
+			return ErrorCodes.ENOENT;
 		}
+		return 0;
 	}
 
 	@Override
 	public int read(String path, ByteBuffer buffer, long size, long offset) {
 		if(content==null) {
-			refreshContent();
+			update();
 		}
 		final String s = content.substring((int) offset,
 				(int) Math.max(offset, Math.min(content.length() - offset, offset + size)));

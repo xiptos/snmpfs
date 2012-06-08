@@ -84,7 +84,7 @@ public class XmlHandler extends DefaultHandler {
 			String label = attributes.getValue("label");
 			String oid = attributes.getValue("oid");
 			String file = attributes.getValue("file");
-			Entry entry = new Entry(label, new OID(oid), file);
+			Entry entry = new Entry(label, OID.parseOID(oid), file);
 
 			device.addEntry(entry);
 
@@ -92,12 +92,12 @@ public class XmlHandler extends DefaultHandler {
 			String label = attributes.getValue("label");
 			String oid = attributes.getValue("oid");
 			String file = attributes.getValue("file");
-			table = new Table(label, new OID(oid), file);
+			table = new Table(label, OID.parseOID(oid), file);
 
 		} else if ("col".equals(qName)) {
 			String label = attributes.getValue("label");
 			String oid = attributes.getValue("oid");
-			Entry entry = new Entry(label, new OID(oid));
+			Entry entry = new Entry(label, OID.parseOID(oid));
 
 			table.addCol(entry);
 		}
